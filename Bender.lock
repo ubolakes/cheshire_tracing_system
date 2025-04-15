@@ -108,6 +108,12 @@ packages:
     - common_cells
     - fpnew
     - tech_cells_generic
+  cva6_te_connector:
+    revision: 6af4fe3fbb8f145b26d2ad09d8f384e3121b2980
+    version: null
+    source:
+      Git: git@github.com:ubolakes/cva6_te_connector.git
+    dependencies: []
   dram_rtl_sim:
     revision: 2cac4a9e12a60537567276b539ab6c919c87b5dc
     version: 0.1.1
@@ -115,6 +121,12 @@ packages:
       Git: https://github.com/pulp-platform/dram_rtl_sim.git
     dependencies:
     - axi
+  encapsulator_atb:
+    revision: 2909aa2d161ec533a857590f6ab3091054908aae
+    version: null
+    source:
+      Git: git@github.com:ubolakes/encapsulator_atb.git
+    dependencies: []
   fpnew:
     revision: f231041c610f270ffc03cbdac38739ddb6426572
     version: null
@@ -202,6 +214,12 @@ packages:
       Git: https://github.com/pulp-platform/tech_cells_generic.git
     dependencies:
     - common_verification
+  trace_encoder:
+    revision: 6b13810141a1fe29757ae12b698b90a94fa92a3d
+    version: null
+    source:
+      Git: git@github.com:ubolakes/trace_encoder.git
+    dependencies: []
   unbent:
     revision: e9c9d5cfb635f2d4668c816ce9235798cfecb297
     version: 0.1.6

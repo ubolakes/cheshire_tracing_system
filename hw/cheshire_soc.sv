@@ -587,6 +587,27 @@ module cheshire_soc import cheshire_pkg::*; #(
 
   assign intr.intn.bus_err.cores = core_bus_err_intr_comb;
 
+  // between tracing modules singals
+  // TIP out - TE in
+  logic [Cva6Cfg.NrCommitPorts-1:0]                                  tip_valid;
+  logic [Cva6Cfg.NrCommitPorts-1:0][connector_pkg::IRETIRE_LEN-1:0]  iretire;
+  logic [Cva6Cfg.NrCommitPorts-1:0]                                  ilastsize;
+  logic [Cva6Cfg.NrCommitPorts-1:0][connector_pkg::ITYPE_LEN-1:0]    itype;
+  logic [connector_pkg::XLEN-1:0]                                    cause;
+  logic [connector_pkg::XLEN-1:0]                                    tval;
+  logic [connector_pkg::PRIV_LEN-1:0]                                priv;
+  logic [Cva6Cfg.NrCommitPorts-1:0][connector_pkg::XLEN-1:0]         iaddr;
+
+  // TE out - encapsulator in
+  logic                           te_valid;
+  te_pkg::it_packet_type_e        packet_type;
+  logic [te_pkg::P_LEN-1:0]       packet_length;
+  logic [te_pkg::PAYLOAD_LEN-1:0] packet_payload;
+
+  // encapsulator out
+  logic encap_ready;
+  logic encap_valid;
+
   for (genvar i = 0; i < NumIntHarts; i++) begin : gen_cva6_cores
     axi_cva6_req_t core_out_req, core_ur_req;
     axi_cva6_rsp_t core_out_rsp, core_ur_rsp;
@@ -631,6 +652,97 @@ module cheshire_soc import cheshire_pkg::*; #(
       .noc_req_o        ( core_out_req ),
       .noc_resp_i       ( core_out_rsp )
     );
+
+    // connects the tracing system only to core 0
+    if (i == 0) begin
+      // TIP instance
+      (* DONT_TOUCH = "TRUE" *) cva6_te_connector #(
+        .NRET(2), // commit ports
+        .N(2),  // special instruction
+        .FIFO_DEPTH(8)
+      ) i_cva6_tip (
+        .clk_i,
+        .rst_ni,
+        .valid_i        ({i_core_cva6.commit_stage_i.commit_ack_o[1], i_core_cva6.commit_stage_i.commit_ack_o[0]}),
+        .pc_i           ({i_core_cva6.commit_stage_i.commit_instr_i[1].pc, i_core_cva6.commit_stage_i.commit_instr_i[0].pc}),
+        .op_i           ({i_core_cva6.commit_stage_i.commit_instr_i[1].op, i_core_cva6.commit_stage_i.commit_instr_i[0].op}),
+        .is_compressed_i({i_core_cva6.commit_stage_i.commit_instr_i[1].is_compressed, i_core_cva6.commit_stage_i.commit_instr_i[0].is_compressed}),
+        .branch_valid_i (i_core_cva6.resolved_branch.valid),
+        .is_taken_i     (i_core_cva6.resolved_branch.is_taken),
+        .cf_type_i      (i_core_cva6.resolved_branch.cf_type),
+        .disc_pc_i      (i_core_cva6.resolved_branch.pc),
+        .ex_valid_i     (i_core_cva6.commit_stage_i.exception_o.valid),
+        .tval_i         (i_core_cva6.commit_stage_i.exception_o.tval),
+        .cause_i        (i_core_cva6.commit_stage_i.exception_o.cause),
+        .priv_lvl_i     (i_core_cva6.priv_lvl),
+        .valid_o        (tip_valid),
+        .iretire_o      (iretire),
+        .ilastsize_o    (ilastsize),
+        .itype_o        (itype),
+        .cause_o        (cause),
+        .tval_o         (tval),
+        .priv_o         (priv),
+        .iaddr_o        (iaddr)
+      );
+
+      // TE instance
+      // TODO: hardwire te_reg signals
+      // because I can't use APB to write
+      (* DONT_TOUCH = "TRUE" *) trace_encoder #(
+        .N(2), // is it 1?
+        .ONLY_BRANCHES(1)
+      ) i_TE (
+        .clk_i,
+        .rst_ni,
+        .valid_i             (tip_valid),
+        .itype_i             (itype),
+        .cause_i             (cause),
+        .tval_i              (tval),
+        .priv_i              (priv),
+        .iaddr_i             (iaddr),
+        .iretire_i           (iretire),
+        .ilastsize_i         (ilastsize),
+        .time_i              ('0),
+        .tvec_i              ('0),
+        .epc_i               ('0),
+        .encapsulator_ready_i(encap_ready),
+        .paddr_i             ('0),
+        .pwrite_i            ('0),
+        .psel_i              ('0),
+        .penable_i           ('0),
+        .pwdata_i            ('0),
+        .packet_valid_o      (te_valid),
+        .packet_type_o       (packet_type),
+        .packet_length_o     (packet_length),
+        .packet_payload_o    (packet_payload),
+        .stall_o             (), // not connected
+        .pready_o            (), // not connected
+        .prdata_o            () // not connected
+      );
+
+      // encapsulator_ATB instance
+      // TODO: find a way to extract encapsulated packets
+      (* DONT_TOUCH = "TRUE" *) encapsulator_atb #(
+        .FIFO_DEPTH(4)
+      ) i_encapsulator_atb (
+        .clk_i,
+        .rst_ni,
+        .valid_i             (te_valid),
+        .packet_length_i     (packet_length),
+        .notime_i            (i_TE.notime),
+        .timestamp_i         ('0), // understand where to read the csr value
+        .trace_payload_i     (packet_payload),
+        .atready_i           ('1), // always ready: check if it breaks something
+        .afvalid_i           ('0),
+        .atbytes_o           (), // not connected
+        .atdata_o            (), // not connected
+        .atid_o              (), // not connected
+        .atvalid_o           (), // not connected
+        .afready_o           (), // not connected
+        .encapsulator_ready_o(encap_ready)
+      );
+
+    end
 
     if (Cfg.BusErr) begin : gen_cva6_bus_err
       axi_err_unit_wrap #(
