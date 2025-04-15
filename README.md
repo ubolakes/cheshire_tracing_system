@@ -1,21 +1,55 @@
-# Cheshire
+# Cheshire with Tracing System
 
 Cheshire is a minimal Linux-capable host platform built around the RISC-V [CVA6](https://github.com/openhwgroup/cva6) core. Its goal is to provide a *lightweight*, *configurable*, *autonomously booting* host to systems that need one, from minimal Linux-capable SoCs to manycore compute accelerators.
 
 Cheshire is developed as part of the PULP project, a joint effort between ETH Zurich and the University of Bologna.
 
+The Tracing System includes: the [Trace Encoder](TODO) (TE), [Trace Input Port](TODO) (TIP), the [Encapsulator](TODO). The whole system is compliant with the [RISC-V Efficient Trace Specification v.2.0.2](TODO).
+The repos are also available inside the PULP Platform GitHub repository.
+
 ## Quick Start
 
-* To learn how to build and use Cheshire, see [Getting Started](https://pulp-platform.github.io/cheshire/gs/).
-* To learn about available simulation, FPGA, and ASIC targets, see [Targets](https://pulp-platform.github.io/cheshire/tg).
-* For detailed information on Cheshire's inner workings, consult the [User Manual](https://pulp-platform.github.io/cheshire/um/).
+To run a simulation you need GCC version 11.2.0 or higher, otherwise the simulation will not complete.
 
-If you are impatient and have all needed [dependencies](https://pulp-platform.github.io/cheshire/gs/#dependencies), you can run `make all`, then start QuestaSim in `target/sim/vsim` and run a [simulation](https://pulp-platform.github.io/cheshire/tg/sim) by typing:
+Here the steps in order to run the simulation:
+1. Move inside the downloaded directory
+```
+cd cheshire_tracing_system
+```
 
+2. Source the bash file to add the RISC-V compiler to the PATH
+```
+source setup.sh
+```
+
+3. Create and activate a Python virtual environment
+```
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+4. Install the Python module required
+```
+pip install -r requirements.txt
+```
+
+5. Run the make
+```
+make all
+```
+
+6. Open QuestaSim
+```
+cd target/sim/vsim
+questa-2022.3 vsim &
+```
+
+7. Run commands inside QuestaSim terminal
 ```
 set BINARY ../../../sw/tests/helloworld.spm.elf
 source compile.cheshire_soc.tcl
 source start.cheshire_soc.tcl
+log -r /*
 run -all
 ```
 
