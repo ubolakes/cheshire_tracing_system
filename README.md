@@ -26,6 +26,7 @@ source setup.sh
 ```
 python3 -m venv .venv
 source .venv/bin/activate
+pip install --upgrade pip
 ```
 
 4. Install the Python module required
