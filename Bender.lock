@@ -122,7 +122,7 @@ packages:
     dependencies:
     - axi
   encapsulator_atb:
-    revision: 36dbccbc0ed31f284b15ecf047d81098599e2e3d
+    revision: 3b03591843b0ecd2a58758b40f03f935c3b105ef
     version: null
     source:
       Git: git@github.com:ubolakes/encapsulator_atb.git
