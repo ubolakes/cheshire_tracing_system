@@ -721,7 +721,6 @@ module cheshire_soc import cheshire_pkg::*; #(
       );
 
       // encapsulator_ATB instance
-      // TODO: find a way to extract encapsulated packets
       (* DONT_TOUCH = "TRUE" *) encapsulator_atb #(
         .FIFO_DEPTH(4)
       ) i_encapsulator_atb (
