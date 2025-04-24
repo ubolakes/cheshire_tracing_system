@@ -109,7 +109,7 @@ packages:
     - fpnew
     - tech_cells_generic
   cva6_te_connector:
-    revision: 5c517b8ea59aad61c14665b3858657782162db3c
+    revision: 38cbbec78266798b00908ad91455b5af1ab86fa8
     version: null
     source:
       Git: https://github.com/ubolakes/cva6_te_connector.git
@@ -215,7 +215,7 @@ packages:
     dependencies:
     - common_verification
   trace_encoder:
-    revision: ef363bde12412e98cd560a225629201ef22eadfc
+    revision: b297e33c60b801c498abfcdd36092350bc7ccf11
     version: null
     source:
       Git: git@github.com:ubolakes/trace_encoder.git
