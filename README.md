@@ -38,6 +38,10 @@ pip install -r requirements.txt
 ```
 make all
 ```
+To rerun 
+```
+rm sw/deps/printf/printf.o
+```
 
 6. Open QuestaSim
 ```
