@@ -32,8 +32,8 @@ dependencies:
   unbent:                   { git: "https://github.com/pulp-platform/unbent.git",                 version: 0.1.6  }
   dram_rtl_sim:             { git: "https://github.com/pulp-platform/dram_rtl_sim.git",           version: 0.1.1  }
   cva6_te_connector:        { git: "https://github.com/ubolakes/cva6_te_connector.git",           rev: 38cbbec78266798b00908ad91455b5af1ab86fa8 }
-  trace_encoder:            { git: "git@github.com:ubolakes/trace_encoder.git",                   rev: b297e33c60b801c498abfcdd36092350bc7ccf11 }
-  encapsulator_atb:         { git: "git@github.com:ubolakes/encapsulator_atb.git",                rev: 3b03591843b0ecd2a58758b40f03f935c3b105ef }
+  rv_tracer:                { git: "https://github.com/pulp-platform/rv_tracer.git",              rev: 4a01f5735ef8134723d7fd64598b5663117c8e48 }
+  rv_encapsulator:          { git: "https://github.com/pulp-platform/rv_encapsulator.git",        rev: c7ae5bdd888161122e93cb716ad2d7aecba543d0 }
 
 export_include_dirs:
   - hw/include

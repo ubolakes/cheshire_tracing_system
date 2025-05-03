@@ -688,7 +688,7 @@ module cheshire_soc import cheshire_pkg::*; #(
       // TE instance
       // TODO: hardwire te_reg signals
       // because I can't use APB to write
-      (* DONT_TOUCH = "TRUE" *) trace_encoder #(
+      (* DONT_TOUCH = "TRUE" *) rv_tracer #(
         .N(2), // is it 1?
         .ONLY_BRANCHES(1)
       ) i_TE (
@@ -721,7 +721,7 @@ module cheshire_soc import cheshire_pkg::*; #(
       );
 
       // encapsulator_ATB instance
-      (* DONT_TOUCH = "TRUE" *) encapsulator_atb #(
+      (* DONT_TOUCH = "TRUE" *) rv_encapsulator #(
         .FIFO_DEPTH(4)
       ) i_encapsulator_atb (
         .clk_i,
